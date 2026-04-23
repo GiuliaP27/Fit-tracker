@@ -1,107 +1,216 @@
-
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workout Tracker</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: var(--font-sans); }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #1a1a1a; min-height: 100vh; }
 
-.app { max-width: 680px; padding: 0; }
+.app { max-width: 600px; margin: 0 auto; padding: 0 0 80px; background: #fff; min-height: 100vh; }
 
-.header { padding: 16px 0 12px; border-bottom: 0.5px solid var(--color-border-tertiary); margin-bottom: 16px; }
-.header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-.split-title { font-size: 18px; font-weight: 500; color: var(--color-text-primary); }
-.split-date { font-size: 12px; color: var(--color-text-secondary); }
+/* TOP NAV */
+.top-nav { display: flex; border-bottom: 1px solid #e8e8e8; background: #fff; position: sticky; top: 0; z-index: 100; }
+.top-nav button { flex: 1; padding: 14px 8px 12px; font-size: 13px; font-weight: 500; border: none; background: transparent; color: #888; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; font-family: inherit; }
+.top-nav button.active { color: #1a1a1a; border-bottom-color: #1a1a1a; }
+
+/* VIEWS */
+.view { display: none; padding: 16px; }
+.view.active { display: block; }
+
+/* HEADER */
+.workout-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.split-title { font-size: 20px; font-weight: 600; }
+.split-date { font-size: 12px; color: #888; margin-bottom: 12px; }
 
 .split-nav { display: flex; gap: 6px; }
-.split-btn { padding: 5px 14px; font-size: 13px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: transparent; color: var(--color-text-secondary); cursor: pointer; transition: all 0.15s; font-family: var(--font-sans); }
-.split-btn:hover { background: var(--color-background-secondary); color: var(--color-text-primary); }
-.split-btn.active { background: var(--color-text-primary); color: var(--color-background-primary); border-color: var(--color-text-primary); }
+.split-btn { padding: 5px 14px; font-size: 13px; border: 1px solid #ddd; border-radius: 20px; background: transparent; color: #666; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.split-btn.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
 
-.progress-bar-wrap { height: 3px; background: var(--color-border-tertiary); border-radius: 2px; margin-top: 12px; }
-.progress-bar-fill { height: 100%; border-radius: 2px; background: var(--color-text-primary); transition: width 0.3s; }
+.progress-bar-wrap { height: 3px; background: #eee; border-radius: 2px; margin-bottom: 16px; }
+.progress-bar-fill { height: 100%; border-radius: 2px; background: #1a1a1a; transition: width 0.3s; }
 
-.exercise-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); margin-bottom: 10px; overflow: hidden; }
-
-.ex-header { padding: 12px 14px 10px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
-.ex-header:hover { background: var(--color-background-secondary); }
-
+/* EXERCISE CARDS */
+.exercise-card { background: #fff; border: 1px solid #eee; border-radius: 12px; margin-bottom: 8px; overflow: hidden; }
+.ex-header { padding: 12px 14px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+.ex-header:active { background: #f9f9f9; }
 .ex-left { display: flex; align-items: center; gap: 10px; }
-.ex-badge { width: 28px; height: 28px; border-radius: 50%; background: var(--color-background-secondary); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; color: var(--color-text-secondary); flex-shrink: 0; }
-.ex-badge.done { background: #EAF3DE; color: #3B6D11; }
-
-.ex-name { font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
-.ex-meta { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; }
+.ex-badge { width: 28px; height: 28px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #888; flex-shrink: 0; }
+.ex-badge.done { background: #e8f5e9; color: #2e7d32; }
+.ex-name { font-size: 14px; font-weight: 600; }
+.ex-meta { font-size: 11px; color: #888; margin-top: 2px; }
 .ex-meta span { margin-right: 8px; }
-
 .ex-right { display: flex; align-items: center; gap: 8px; }
-.tech-badge { font-size: 10px; padding: 2px 8px; border-radius: 4px; background: var(--color-background-info); color: var(--color-text-info); font-weight: 500; white-space: nowrap; }
-.chevron { font-size: 10px; color: var(--color-text-secondary); transition: transform 0.2s; }
+.tech-badge { font-size: 10px; padding: 2px 8px; border-radius: 4px; background: #e8f0fe; color: #1a56db; font-weight: 500; white-space: nowrap; }
+.warmup-tag { font-size: 10px; padding: 2px 6px; background: #fff3e0; color: #e65100; border-radius: 4px; font-weight: 500; }
+.chevron { font-size: 10px; color: #bbb; transition: transform 0.2s; }
 .chevron.open { transform: rotate(180deg); }
 
-.ex-body { display: none; padding: 0 14px 14px; border-top: 0.5px solid var(--color-border-tertiary); }
+.ex-body { display: none; padding: 0 14px 14px; border-top: 1px solid #f0f0f0; }
 .ex-body.open { display: block; }
+.coach-note { font-size: 12px; color: #666; background: #f9f9f9; padding: 8px 10px; border-radius: 8px; margin: 10px 0 12px; line-height: 1.5; }
 
-.coach-note { font-size: 12px; color: var(--color-text-secondary); background: var(--color-background-secondary); padding: 8px 10px; border-radius: var(--border-radius-md); margin: 10px 0 12px; line-height: 1.5; }
+.sets-header { display: grid; grid-template-columns: 28px 1fr 1fr; gap: 6px; margin-bottom: 6px; padding: 0 2px; }
+.sets-header span { font-size: 11px; color: #888; font-weight: 500; }
+.set-row { display: grid; grid-template-columns: 28px 1fr 1fr; gap: 6px; margin-bottom: 8px; align-items: start; }
+.set-num { font-size: 12px; color: #aaa; font-weight: 600; text-align: center; padding-top: 10px; }
 
-.sets-header { display: grid; grid-template-columns: 32px 1fr 1fr; gap: 6px; margin-bottom: 6px; padding: 0 2px; }
-.sets-header span { font-size: 11px; color: var(--color-text-secondary); font-weight: 500; }
-
-.set-row { display: grid; grid-template-columns: 32px 1fr 1fr; gap: 6px; margin-bottom: 6px; align-items: center; }
-
-.set-num { font-size: 12px; color: var(--color-text-secondary); font-weight: 500; text-align: center; padding-top: 2px; }
-
-.input-group { position: relative; }
-.input-group input { width: 100%; padding: 7px 10px; font-size: 14px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-primary); font-family: var(--font-sans); text-align: center; }
-.input-group input:focus { outline: none; border-color: var(--color-border-primary); box-shadow: 0 0 0 2px rgba(0,0,0,0.06); }
-.input-group input.filled { border-color: var(--color-border-tertiary); }
+.input-group input { width: 100%; padding: 8px 6px; font-size: 15px; border: 1px solid #e0e0e0; border-radius: 8px; background: #fff; color: #1a1a1a; font-family: inherit; text-align: center; -moz-appearance: textfield; }
+.input-group input::-webkit-outer-spin-button,
+.input-group input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.input-group input:focus { outline: none; border-color: #1a1a1a; }
+.input-group input.filled { background: #f9f9f9; border-color: #e8e8e8; }
 
 .prev-label { display: flex; justify-content: space-between; margin-top: 3px; padding: 0 2px; }
-.prev-val { font-size: 10px; color: var(--color-text-secondary); }
-.delta { font-size: 10px; font-weight: 500; }
-.delta.up { color: #3B6D11; }
-.delta.down { color: #993C1D; }
-.delta.eq { color: var(--color-text-secondary); }
+.prev-val { font-size: 10px; color: #aaa; }
+.delta { font-size: 10px; font-weight: 600; }
+.delta.up { color: #2e7d32; }
+.delta.down { color: #c62828; }
+.delta.eq { color: #aaa; }
 
-.set-row.complete .input-group input { background: var(--color-background-secondary); }
+.complete-btn { width: 100%; margin-top: 10px; padding: 9px; font-size: 13px; font-weight: 500; border: 1px solid #ddd; border-radius: 8px; background: transparent; color: #1a1a1a; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+.complete-btn.done-btn { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
 
-.complete-btn { width: 100%; margin-top: 12px; padding: 9px; font-size: 13px; font-weight: 500; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: transparent; color: var(--color-text-primary); cursor: pointer; font-family: var(--font-sans); transition: all 0.15s; }
-.complete-btn:hover { background: var(--color-background-secondary); }
-.complete-btn.done-btn { background: var(--color-text-primary); color: var(--color-background-primary); border-color: var(--color-text-primary); }
+/* FINISH BAR */
+.finish-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 600px; padding: 10px 16px 20px; background: #fff; border-top: 1px solid #eee; }
+.finish-btn { width: 100%; padding: 13px; font-size: 14px; font-weight: 600; border: none; border-radius: 12px; background: #1a1a1a; color: #fff; cursor: pointer; font-family: inherit; transition: opacity 0.2s; }
+.finish-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.finish-btn:not(:disabled):active { opacity: 0.8; }
 
-.finish-bar { position: sticky; bottom: 0; padding: 12px 0 4px; background: var(--color-background-primary); border-top: 0.5px solid var(--color-border-tertiary); margin-top: 4px; }
-.finish-btn { width: 100%; padding: 12px; font-size: 14px; font-weight: 500; border: none; border-radius: var(--border-radius-lg); background: var(--color-text-primary); color: var(--color-background-primary); cursor: pointer; font-family: var(--font-sans); transition: opacity 0.2s; }
-.finish-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-.finish-btn:not(:disabled):hover { opacity: 0.85; }
+/* SYNC VIEW */
+.sync-section { background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+.sync-section-title { font-size: 11px; font-weight: 600; color: #888; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 16px; }
 
-.toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--color-text-primary); color: var(--color-background-primary); padding: 10px 20px; border-radius: var(--border-radius-md); font-size: 13px; font-weight: 500; display: none; z-index: 999; white-space: nowrap; }
+.form-group { margin-bottom: 16px; }
+.form-label { font-size: 13px; font-weight: 500; color: #1a1a1a; margin-bottom: 6px; display: block; }
+.form-sublabel { font-size: 11px; color: #888; margin-bottom: 6px; display: block; }
+
+.token-wrap { display: flex; gap: 8px; }
+.token-wrap input { flex: 1; }
+
+input[type="text"], input[type="password"] {
+  width: 100%; padding: 10px 12px; font-size: 14px; border: 1px solid #e0e0e0;
+  border-radius: 8px; background: #fff; color: #1a1a1a; font-family: inherit;
+}
+input[type="text"]:focus, input[type="password"]:focus { outline: none; border-color: #1a1a1a; }
+input::placeholder { color: #bbb; }
+
+.toggle-btn { padding: 10px 12px; border: 1px solid #e0e0e0; border-radius: 8px; background: #fff; cursor: pointer; font-size: 14px; color: #666; white-space: nowrap; }
+.toggle-btn:active { background: #f5f5f5; }
+
+.sync-actions { display: flex; gap: 8px; margin-top: 4px; }
+.btn-primary { flex: 1; padding: 11px; font-size: 14px; font-weight: 600; border: none; border-radius: 10px; background: #1a1a1a; color: #fff; cursor: pointer; font-family: inherit; transition: opacity 0.15s; }
+.btn-primary:active { opacity: 0.8; }
+.btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
+.btn-secondary { flex: 1; padding: 11px; font-size: 14px; font-weight: 500; border: 1px solid #ddd; border-radius: 10px; background: #fff; color: #1a1a1a; cursor: pointer; font-family: inherit; transition: background 0.15s; }
+.btn-secondary:active { background: #f5f5f5; }
+.btn-secondary:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.status-row { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 13px; color: #666; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: #ddd; flex-shrink: 0; }
+.status-dot.ok { background: #2e7d32; }
+.status-dot.err { background: #c62828; }
+.status-dot.syncing { background: #f59e0b; animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+.sync-instructions { font-size: 12px; color: #666; line-height: 1.7; }
+.sync-instructions a { color: #1a56db; text-decoration: none; }
+.sync-instructions ol { padding-left: 16px; }
+.sync-instructions li { margin-bottom: 4px; }
+
+.last-sync { font-size: 11px; color: #aaa; margin-top: 8px; }
+
+/* TOAST */
+.toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1a1a1a; color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 13px; font-weight: 500; display: none; z-index: 999; white-space: nowrap; box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
 .toast.show { display: block; }
-
-.warmup-tag { font-size: 10px; padding: 2px 6px; background: #FAEEDA; color: #854F0B; border-radius: 4px; font-weight: 500; }
 </style>
-
-<h2 class="sr-only">App di tracciamento allenamento con progressione dei carichi per 3 split settimanali</h2>
+</head>
+<body>
 
 <div class="app">
-  <div class="header">
-    <div class="header-top">
-      <div>
-        <div class="split-title" id="splitTitle">Split 1</div>
-        <div class="split-date" id="splitDate"></div>
-      </div>
+  <nav class="top-nav">
+    <button class="active" onclick="showView('workout')">Allenamento</button>
+    <button onclick="showView('sync')">Sync</button>
+  </nav>
+
+  <!-- WORKOUT VIEW -->
+  <div class="view active" id="view-workout">
+    <div class="workout-header">
+      <div class="split-title" id="splitTitle">Split 1</div>
       <div class="split-nav">
         <button class="split-btn active" onclick="loadSplit(0)">S1</button>
         <button class="split-btn" onclick="loadSplit(1)">S2</button>
         <button class="split-btn" onclick="loadSplit(2)">S3</button>
       </div>
     </div>
+    <div class="split-date" id="splitDate"></div>
     <div class="progress-bar-wrap">
       <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
     </div>
+    <div id="exerciseList"></div>
+    <div style="height:16px"></div>
   </div>
 
-  <div id="exerciseList"></div>
+  <!-- SYNC VIEW -->
+  <div class="view" id="view-sync">
+    <div class="sync-section">
+      <div class="sync-section-title">Configurazione GitHub Gist</div>
 
-  <div class="finish-bar">
-    <button class="finish-btn" id="finishBtn" disabled onclick="finishWorkout()">Completa allenamento</button>
+      <div class="form-group">
+        <label class="form-label">GitHub Personal Access Token</label>
+        <div class="token-wrap">
+          <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off" autocorrect="off" spellcheck="false">
+          <button class="toggle-btn" onclick="toggleToken()">👁</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Gist ID</label>
+        <span class="form-sublabel">Lascia vuoto per crearne uno nuovo al primo sync</span>
+        <input type="text" id="gistIdInput" placeholder="Auto-generato al primo sync" autocomplete="off" spellcheck="false">
+      </div>
+
+      <div class="sync-actions">
+        <button class="btn-primary" onclick="saveConfig()">Salva</button>
+        <button class="btn-secondary" id="syncBtn" onclick="syncNow()" disabled>Sincronizza</button>
+      </div>
+
+      <div class="status-row">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">Non configurato</span>
+      </div>
+      <div class="last-sync" id="lastSyncLabel"></div>
+    </div>
+
+    <div class="sync-section">
+      <div class="sync-section-title">Come configurare</div>
+      <div class="sync-instructions">
+        <ol>
+          <li>Vai su <a href="https://github.com/settings/tokens" target="_blank">github.com/settings/tokens</a></li>
+          <li>Genera un token con scope <strong>gist</strong></li>
+          <li>Incollalo qui sopra e premi Salva</li>
+          <li>Il Gist viene creato automaticamente al primo sync</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="sync-section">
+      <div class="sync-section-title">Azioni dati</div>
+      <div class="sync-actions">
+        <button class="btn-secondary" onclick="pullFromGist()">⬇ Scarica dal Gist</button>
+        <button class="btn-secondary" onclick="pushToGist()">⬆ Carica su Gist</button>
+      </div>
+      <p style="font-size:11px;color:#aaa;margin-top:10px;line-height:1.5;">
+        "Scarica" sovrascrive i dati locali con quelli del Gist (utile quando cambi dispositivo).<br>
+        "Carica" sovrascrive il Gist con i dati locali.
+      </p>
+    </div>
   </div>
+</div>
+
+<div class="finish-bar" id="finishBar" style="display:none">
+  <button class="finish-btn" id="finishBtn" disabled onclick="finishWorkout()">Completa allenamento</button>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -112,73 +221,76 @@ const SPLITS = [
     name: "Split 1",
     exercises: [
       { name: "Open Book", tech: null, note: "A terra. Respiri profondi. Alternando destra e sinistra, ma almeno 5 minuti", sets: null, repGoal: null, rest: null, warmup: true },
-      { name: "Gatto-Mucca", tech: null, note: "Massimo allungamento e accorciamento della colonna. Movimenti lenti e completi. Una reps vale il doppio movimento", sets: 3, repGoal: "10", rest: "60″" },
-      { name: "Affondo Indietro Statico", tech: null, note: "Rimani in affondo con torsione del busto, anche con appoggio. 20-30″ per lato × 3 volte", sets: 3, repGoal: "30″", rest: "30-45″" },
-      { name: "Alzate Laterali", tech: "To Failure", note: "In piedi", sets: 3, repGoal: "15RM", rest: "60-75″" },
-      { name: "Affondo Indietro + Squat", tech: "To Failure", note: "A corpo libero, eventualmente con KB. Affondo DX, affondo SX e uno squat. Soli contano gli squat", sets: 3, repGoal: "8-10", rest: "75-90″" },
-      { name: "Lento Avanti Manubri", tech: "Working Set", note: "Singolo. Manubrio. Seduta senza schienale. Video", sets: 3, repGoal: "10-12", rest: "75-90″" },
-      { name: "Leg Extension", tech: "Straight Sets", note: "Movimenti controllati e completi. Piedi a martello durante tutta l'esecuzione", sets: 3, repGoal: "8-10", rest: "90-120″" },
-      { name: "Push Down", tech: "Working Set", note: "Corda o Vulken. In piedi", sets: 3, repGoal: "10-12", rest: "75-90″" },
-      { name: "Crunch", tech: "To Failure", note: "Gambe piegate", sets: 3, repGoal: "12-15", rest: "45-60″" },
+      { name: "Gatto-Mucca", tech: null, note: "Massimo allungamento e accorciamento della colonna. Movimenti lenti e completi. Una reps vale il doppio movimento", sets: 3, repGoal: "10", rest: "60\"" },
+      { name: "Affondo Indietro Statico", tech: null, note: "Rimani in affondo con torsione del busto, anche con appoggio. 20-30\" per lato x 3 volte", sets: 3, repGoal: "30\"", rest: "30-45\"" },
+      { name: "Alzate Laterali", tech: "To Failure", note: "In piedi", sets: 3, repGoal: "15RM", rest: "60-75\"" },
+      { name: "Affondo Indietro + Squat", tech: "To Failure", note: "A corpo libero, eventualmente con KB. Affondo DX, affondo SX e uno squat. Soli contano gli squat", sets: 3, repGoal: "8-10", rest: "75-90\"" },
+      { name: "Lento Avanti Manubri", tech: "Working Set", note: "Singolo. Manubrio. Seduta senza schienale. Video", sets: 3, repGoal: "10-12", rest: "75-90\"" },
+      { name: "Leg Extension", tech: "Straight Sets", note: "Movimenti controllati e completi. Piedi a martello durante tutta l'esecuzione", sets: 3, repGoal: "8-10", rest: "90-120\"" },
+      { name: "Push Down", tech: "Working Set", note: "Corda o Vulken. In piedi", sets: 3, repGoal: "10-12", rest: "75-90\"" },
+      { name: "Crunch", tech: "To Failure", note: "Gambe piegate", sets: 3, repGoal: "12-15", rest: "45-60\"" },
     ]
   },
   {
     name: "Split 2",
     exercises: [
       { name: "Open Book", tech: null, note: "A terra. Respiri profondi. Alternando destra e sinistra, ma almeno 5 minuti", sets: null, repGoal: null, rest: null, warmup: true },
-      { name: "Gatto-Mucca", tech: null, note: "Massimo allungamento e accorciamento della colonna. Movimenti lenti e completi", sets: 3, repGoal: "10", rest: "60″" },
-      { name: "Affondo Indietro Statico", tech: null, note: "Rimani in affondo con torsione del busto, anche con appoggio. 20-30″ per lato × 3 volte", sets: 3, repGoal: "30″", rest: "30-45″" },
-      { name: "Lat Machine", tech: "Working Set", note: "Singolo. Maniglia. Video. Massimo allungamento", sets: 3, repGoal: "10-12", rest: "75-90″" },
-      { name: "Split Squat", tech: "Straight Sets", note: "Manubrio nella mano opposta della gamba che spinge. Entrambi i piedi a terra, senza tornare a piedi pari. Passo lungo e profondo", sets: 3, repGoal: "8-10", rest: "90-120″" },
-      { name: "Rematore Manubrio", tech: "Working Set", note: "In appoggio su panca. Video", sets: 3, repGoal: "10-12", rest: "90-120″" },
-      { name: "RDL", tech: "To Failure", note: "Video. Manubri", sets: 3, repGoal: "15RM", rest: "90-120″" },
-      { name: "Hammer Curl", tech: "Straight Sets", note: "In piedi. In coppia", sets: 3, repGoal: "8-10", rest: "90-120″" },
-      { name: "Side Plank", tech: "To Failure", note: "In appoggio su gomito", sets: 3, repGoal: "MAX", rest: "45-60″" },
+      { name: "Gatto-Mucca", tech: null, note: "Massimo allungamento e accorciamento della colonna. Movimenti lenti e completi", sets: 3, repGoal: "10", rest: "60\"" },
+      { name: "Affondo Indietro Statico", tech: null, note: "Rimani in affondo con torsione del busto, anche con appoggio. 20-30\" per lato x 3 volte", sets: 3, repGoal: "30\"", rest: "30-45\"" },
+      { name: "Lat Machine", tech: "Working Set", note: "Singolo. Maniglia. Video. Massimo allungamento", sets: 3, repGoal: "10-12", rest: "75-90\"" },
+      { name: "Split Squat", tech: "Straight Sets", note: "Manubrio nella mano opposta della gamba che spinge. Entrambi i piedi a terra, senza tornare a piedi pari. Passo lungo e profondo", sets: 3, repGoal: "8-10", rest: "90-120\"" },
+      { name: "Rematore Manubrio", tech: "Working Set", note: "In appoggio su panca. Video", sets: 3, repGoal: "10-12", rest: "90-120\"" },
+      { name: "RDL", tech: "To Failure", note: "Video. Manubri", sets: 3, repGoal: "15RM", rest: "90-120\"" },
+      { name: "Hammer Curl", tech: "Straight Sets", note: "In piedi. In coppia", sets: 3, repGoal: "8-10", rest: "90-120\"" },
+      { name: "Side Plank", tech: "To Failure", note: "In appoggio su gomito", sets: 3, repGoal: "MAX", rest: "45-60\"" },
     ]
   },
   {
     name: "Split 3",
     exercises: [
       { name: "Open Book", tech: null, note: "A terra. Respiri profondi. Alternando destra e sinistra, ma almeno 5 minuti", sets: null, repGoal: null, rest: null, warmup: true },
-      { name: "Gatto-Mucca", tech: null, note: "Massimo allungamento e accorciamento della colonna. Movimenti lenti e completi", sets: 3, repGoal: "10", rest: "60″" },
-      { name: "Affondo Indietro Statico", tech: null, note: "Rimani in affondo con torsione del busto, anche con appoggio. 20-30″ per lato × 3 volte", sets: 3, repGoal: "30″", rest: "30-45″" },
-      { name: "Pulley Basso", tech: "Straight Sets", note: "Triangolo. Video", sets: 3, repGoal: "10-12", rest: "75-90″" },
-      { name: "Leg Curl", tech: "Working Set", note: "Movimenti controllati e completi. No strattoni", sets: 3, repGoal: "8-10", rest: "75-90″" },
-      { name: "Renegare Row", tech: "Straight Sets", note: "Posizione di plank, ma a braccia tese. Un braccio per volta", sets: 3, repGoal: "8-10", rest: "90-120″" },
-      { name: "Russian Swing", tech: "To Failure", note: "KB da 8. Belle contrazioni del gluteo ad ogni reps", sets: 3, repGoal: "10-12", rest: "75-90″" },
-      { name: "Distensioni Panca Inclinata", tech: "To Failure", note: "Manubri. Panca 45°. Video", sets: 3, repGoal: "8-10", rest: "90-120″" },
-      { name: "Crunch Inverso", tech: "To Failure", note: "Gambe tese e mani sotto i glutei. Movimenti lenti soprattutto a scendere", sets: 3, repGoal: "10-12", rest: "45-60″" },
+      { name: "Gatto-Mucca", tech: null, note: "Massimo allungamento e accorciamento della colonna. Movimenti lenti e completi", sets: 3, repGoal: "10", rest: "60\"" },
+      { name: "Affondo Indietro Statico", tech: null, note: "Rimani in affondo con torsione del busto, anche con appoggio. 20-30\" per lato x 3 volte", sets: 3, repGoal: "30\"", rest: "30-45\"" },
+      { name: "Pulley Basso", tech: "Straight Sets", note: "Triangolo. Video", sets: 3, repGoal: "10-12", rest: "75-90\"" },
+      { name: "Leg Curl", tech: "Working Set", note: "Movimenti controllati e completi. No strattoni", sets: 3, repGoal: "8-10", rest: "75-90\"" },
+      { name: "Renegare Row", tech: "Straight Sets", note: "Posizione di plank, ma a braccia tese. Un braccio per volta", sets: 3, repGoal: "8-10", rest: "90-120\"" },
+      { name: "Russian Swing", tech: "To Failure", note: "KB da 8. Belle contrazioni del gluteo ad ogni reps", sets: 3, repGoal: "10-12", rest: "75-90\"" },
+      { name: "Distensioni Panca Inclinata", tech: "To Failure", note: "Manubri. Panca 45°. Video", sets: 3, repGoal: "8-10", rest: "90-120\"" },
+      { name: "Crunch Inverso", tech: "To Failure", note: "Gambe tese e mani sotto i glutei. Movimenti lenti soprattutto a scendere", sets: 3, repGoal: "10-12", rest: "45-60\"" },
     ]
   }
 ];
 
 let currentSplit = 0;
-let state = {};
 
-function storageKey(split, ex, set, field) {
-  return `wt_s${split}_e${ex}_s${set}_${field}`;
-}
-function historyKey(split, ex, set, field) {
-  return `wt_prev_s${split}_e${ex}_s${set}_${field}`;
+// ── STORAGE (localStorage) ────────────────────────────────────────
+function saveVal(key, val) { try { localStorage.setItem(key, val); } catch(e) {} }
+function loadVal(key) { try { return localStorage.getItem(key) || ''; } catch(e) { return ''; } }
+function storageKey(split, ex, set, field) { return `wt_s${split}_e${ex}_s${set}_${field}`; }
+function historyKey(split, ex, set, field) { return `wt_prev_s${split}_e${ex}_s${set}_${field}`; }
+
+// ── VIEWS ─────────────────────────────────────────────────────────
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.top-nav button').forEach((b,i) => {
+    b.classList.toggle('active', (i === 0 && name === 'workout') || (i === 1 && name === 'sync'));
+  });
+  document.getElementById('view-' + name).classList.add('active');
+  document.getElementById('finishBar').style.display = name === 'workout' ? 'block' : 'none';
+  if (name === 'sync') initSyncView();
 }
 
-async function saveVal(key, val) {
-  try { await window.storage.set(key, val); } catch(e) {}
-}
-async function loadVal(key) {
-  try { const r = await window.storage.get(key); return r ? r.value : null; } catch(e) { return null; }
-}
-
-async function loadSplit(idx) {
+// ── SPLIT LOAD ────────────────────────────────────────────────────
+function loadSplit(idx) {
   currentSplit = idx;
   document.querySelectorAll('.split-btn').forEach((b,i) => b.classList.toggle('active', i === idx));
   document.getElementById('splitTitle').textContent = SPLITS[idx].name;
   document.getElementById('splitDate').textContent = new Date().toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long'});
-  state = {};
-  await renderExercises();
+  renderExercises();
 }
 
-async function renderExercises() {
+// ── RENDER ────────────────────────────────────────────────────────
+function renderExercises() {
   const split = SPLITS[currentSplit];
   const container = document.getElementById('exerciseList');
   container.innerHTML = '';
@@ -190,10 +302,11 @@ async function renderExercises() {
     card.id = `ex-${ei}`;
 
     if (ex.warmup) {
+      const warmupDone = loadVal(storageKey(currentSplit, ei, 0, 'done')) === '1';
       card.innerHTML = `
         <div class="ex-header" onclick="toggleEx(${ei})">
           <div class="ex-left">
-            <div class="ex-badge" id="badge-${ei}">~</div>
+            <div class="ex-badge ${warmupDone ? 'done' : ''}" id="badge-${ei}">${warmupDone ? '✓' : '~'}</div>
             <div>
               <div class="ex-name">${ex.name}</div>
               <div class="ex-meta"><span class="warmup-tag">riscaldamento</span></div>
@@ -203,30 +316,21 @@ async function renderExercises() {
         </div>
         <div class="ex-body" id="body-${ei}">
           <div class="coach-note">${ex.note}</div>
-          <button class="complete-btn" onclick="markWarmupDone(${ei})">Fatto ✓</button>
+          <button class="complete-btn ${warmupDone ? 'done-btn' : ''}" id="warmup-btn-${ei}" onclick="markWarmupDone(${ei})">${warmupDone ? 'Completato ✓' : 'Fatto ✓'}</button>
         </div>`;
     } else {
       const setNums = ex.sets || 3;
       let setRows = '';
-      const prevData = [];
-      const curData = [];
+      let allDone = true;
 
       for (let si = 0; si < setNums; si++) {
-        const pkgKey = storageKey(currentSplit, ei, si, 'kg');
-        const prepKey = storageKey(currentSplit, ei, si, 'rep');
-        const phkgKey = historyKey(currentSplit, ei, si, 'kg');
-        const phrepKey = historyKey(currentSplit, ei, si, 'rep');
-
-        const savedKg = await loadVal(pkgKey) || '';
-        const savedRep = await loadVal(prepKey) || '';
-        const prevKg = await loadVal(phkgKey) || '';
-        const prevRep = await loadVal(phrepKey) || '';
-
-        prevData.push({ kg: prevKg, rep: prevRep });
-        curData.push({ kg: savedKg, rep: savedRep });
-
-        const kgDelta = getDelta(savedKg, prevKg, 'kg');
-        const repDelta = getDelta(savedRep, prevRep, 'rep');
+        const savedKg  = loadVal(storageKey(currentSplit, ei, si, 'kg'));
+        const savedRep = loadVal(storageKey(currentSplit, ei, si, 'rep'));
+        const prevKg   = loadVal(historyKey(currentSplit, ei, si, 'kg'));
+        const prevRep  = loadVal(historyKey(currentSplit, ei, si, 'rep'));
+        if (!savedKg || !savedRep) allDone = false;
+        const kgDelta  = getDelta(savedKg, prevKg);
+        const repDelta = getDelta(savedRep, prevRep);
 
         setRows += `
           <div class="set-row" id="setrow-${ei}-${si}">
@@ -237,7 +341,7 @@ async function renderExercises() {
                 onchange="handleInput(${ei},${si},'kg',this.value)"
                 onfocus="this.select()" class="${savedKg ? 'filled' : ''}">
               <div class="prev-label">
-                <span class="prev-val">${prevKg ? 'prec: ' + prevKg + ' kg' : 'nessun dato'}</span>
+                <span class="prev-val">${prevKg ? 'prec: ' + prevKg + ' kg' : '—'}</span>
                 ${savedKg && prevKg ? `<span class="delta ${kgDelta.cls}">${kgDelta.sym}</span>` : ''}
               </div>
             </div>
@@ -247,19 +351,17 @@ async function renderExercises() {
                 onchange="handleInput(${ei},${si},'rep',this.value)"
                 onfocus="this.select()" class="${savedRep ? 'filled' : ''}">
               <div class="prev-label">
-                <span class="prev-val">${prevRep ? 'prec: ' + prevRep : 'nessun dato'}</span>
+                <span class="prev-val">${prevRep ? 'prec: ' + prevRep : '—'}</span>
                 ${savedRep && prevRep ? `<span class="delta ${repDelta.cls}">${repDelta.sym}</span>` : ''}
               </div>
             </div>
           </div>`;
       }
 
-      const isDone = curData.every(d => d.kg && d.rep);
-
       card.innerHTML = `
         <div class="ex-header" onclick="toggleEx(${ei})">
           <div class="ex-left">
-            <div class="ex-badge ${isDone ? 'done' : ''}" id="badge-${ei}">${isDone ? '✓' : ei + 1}</div>
+            <div class="ex-badge ${allDone ? 'done' : ''}" id="badge-${ei}">${allDone ? '✓' : ei + 1}</div>
             <div>
               <div class="ex-name">${ex.name}</div>
               <div class="ex-meta">
@@ -276,20 +378,17 @@ async function renderExercises() {
         </div>
         <div class="ex-body" id="body-${ei}">
           <div class="coach-note">${ex.note}</div>
-          <div class="sets-header">
-            <span></span><span>Kg</span><span>Reps</span>
-          </div>
+          <div class="sets-header"><span></span><span>Kg</span><span>Reps</span></div>
           ${setRows}
         </div>`;
     }
-
     container.appendChild(card);
   }
-
   updateProgress();
 }
 
-function getDelta(cur, prev, type) {
+// ── HELPERS ───────────────────────────────────────────────────────
+function getDelta(cur, prev) {
   if (!cur || !prev) return { cls: 'eq', sym: '' };
   const c = parseFloat(cur), p = parseFloat(prev);
   if (isNaN(c) || isNaN(p)) return { cls: 'eq', sym: '=' };
@@ -301,14 +400,12 @@ function getDelta(cur, prev, type) {
 function toggleEx(ei) {
   const body = document.getElementById(`body-${ei}`);
   const chev = document.getElementById(`chev-${ei}`);
-  const isOpen = body.classList.contains('open');
-  body.classList.toggle('open', !isOpen);
-  chev.classList.toggle('open', !isOpen);
+  body.classList.toggle('open');
+  chev.classList.toggle('open', body.classList.contains('open'));
 }
 
-async function handleInput(ei, si, field, val) {
-  const key = storageKey(currentSplit, ei, si, field);
-  await saveVal(key, val);
+function handleInput(ei, si, field, val) {
+  saveVal(storageKey(currentSplit, ei, si, field), val);
   const input = document.getElementById(`${field}-${ei}-${si}`);
   if (input) input.classList.toggle('filled', !!val);
 
@@ -316,96 +413,223 @@ async function handleInput(ei, si, field, val) {
   const setNums = ex.sets || 3;
   let allDone = true;
   for (let s = 0; s < setNums; s++) {
-    const kg = document.getElementById(`kg-${ei}-${s}`);
+    const kg  = document.getElementById(`kg-${ei}-${s}`);
     const rep = document.getElementById(`rep-${ei}-${s}`);
     if (!kg || !rep || !kg.value || !rep.value) { allDone = false; break; }
   }
-
   const badge = document.getElementById(`badge-${ei}`);
-  if (badge) {
-    badge.textContent = allDone ? '✓' : (ei + 1);
-    badge.classList.toggle('done', allDone);
-  }
+  if (badge) { badge.textContent = allDone ? '✓' : (ei + 1); badge.classList.toggle('done', allDone); }
 
-  const prevKgKey = historyKey(currentSplit, ei, si, 'kg');
-  const prevRepKey = historyKey(currentSplit, ei, si, 'rep');
-  const prevKg = await loadVal(prevKgKey) || '';
-  const prevRep = await loadVal(prevRepKey) || '';
-
-  const curKg = document.getElementById(`kg-${ei}-${si}`)?.value || '';
-  const curRep = document.getElementById(`rep-${ei}-${si}`)?.value || '';
-
-  const kgDelta = getDelta(curKg, prevKg, 'kg');
-  const repDelta = getDelta(curRep, prevRep, 'rep');
+  const prevKg  = loadVal(historyKey(currentSplit, ei, si, 'kg'));
+  const prevRep = loadVal(historyKey(currentSplit, ei, si, 'rep'));
+  const curKg   = document.getElementById(`kg-${ei}-${si}`)?.value || '';
+  const curRep  = document.getElementById(`rep-${ei}-${si}`)?.value || '';
+  const kgDelta  = getDelta(curKg, prevKg);
+  const repDelta = getDelta(curRep, prevRep);
 
   const row = document.getElementById(`setrow-${ei}-${si}`);
   if (row) {
-    const prevLabels = row.querySelectorAll('.prev-label');
-    if (prevLabels[0]) {
-      prevLabels[0].innerHTML = `<span class="prev-val">${prevKg ? 'prec: ' + prevKg + ' kg' : 'nessun dato'}</span>${curKg && prevKg ? `<span class="delta ${kgDelta.cls}">${kgDelta.sym}</span>` : ''}`;
-    }
-    if (prevLabels[1]) {
-      prevLabels[1].innerHTML = `<span class="prev-val">${prevRep ? 'prec: ' + prevRep : 'nessun dato'}</span>${curRep && prevRep ? `<span class="delta ${repDelta.cls}">${repDelta.sym}</span>` : ''}`;
-    }
+    const labels = row.querySelectorAll('.prev-label');
+    if (labels[0]) labels[0].innerHTML = `<span class="prev-val">${prevKg ? 'prec: ' + prevKg + ' kg' : '—'}</span>${curKg && prevKg ? `<span class="delta ${kgDelta.cls}">${kgDelta.sym}</span>` : ''}`;
+    if (labels[1]) labels[1].innerHTML = `<span class="prev-val">${prevRep ? 'prec: ' + prevRep : '—'}</span>${curRep && prevRep ? `<span class="delta ${repDelta.cls}">${repDelta.sym}</span>` : ''}`;
   }
-
   updateProgress();
 }
 
 function markWarmupDone(ei) {
-  const btn = document.querySelector(`#ex-${ei} .complete-btn`);
+  saveVal(storageKey(currentSplit, ei, 0, 'done'), '1');
+  const btn = document.getElementById(`warmup-btn-${ei}`);
   if (btn) { btn.textContent = 'Completato ✓'; btn.classList.add('done-btn'); }
   const badge = document.getElementById(`badge-${ei}`);
   if (badge) { badge.textContent = '✓'; badge.classList.add('done'); }
-  saveVal(storageKey(currentSplit, ei, 0, 'done'), '1');
   updateProgress();
 }
 
-async function updateProgress() {
+function updateProgress() {
   const split = SPLITS[currentSplit];
-  let done = 0, total = split.exercises.length;
-
+  let done = 0;
   for (let ei = 0; ei < split.exercises.length; ei++) {
     const ex = split.exercises[ei];
     if (ex.warmup) {
-      const d = await loadVal(storageKey(currentSplit, ei, 0, 'done'));
-      const badge = document.getElementById(`badge-${ei}`);
-      if (badge && badge.textContent === '✓') done++;
-      else if (d) done++;
+      if (loadVal(storageKey(currentSplit, ei, 0, 'done')) === '1') done++;
     } else {
       const setNums = ex.sets || 3;
       let allDone = true;
       for (let s = 0; s < setNums; s++) {
-        const kg = document.getElementById(`kg-${ei}-${s}`);
-        const rep = document.getElementById(`rep-${ei}-${s}`);
-        if (!kg || !rep || !kg.value || !rep.value) { allDone = false; break; }
+        if (!loadVal(storageKey(currentSplit, ei, s, 'kg')) || !loadVal(storageKey(currentSplit, ei, s, 'rep'))) { allDone = false; break; }
       }
       if (allDone) done++;
     }
   }
-
-  const pct = Math.round((done / total) * 100);
+  const pct = Math.round((done / split.exercises.length) * 100);
   document.getElementById('progressFill').style.width = pct + '%';
-  const finishBtn = document.getElementById('finishBtn');
-  finishBtn.disabled = done < total;
-  finishBtn.textContent = done < total ? `Completa allenamento (${done}/${total})` : 'Salva allenamento ✓';
+  const fb = document.getElementById('finishBtn');
+  fb.disabled = done < split.exercises.length;
+  fb.textContent = done < split.exercises.length ? `Completa allenamento (${done}/${split.exercises.length})` : 'Salva allenamento ✓';
 }
 
-async function finishWorkout() {
+function finishWorkout() {
   const split = SPLITS[currentSplit];
   for (let ei = 0; ei < split.exercises.length; ei++) {
     const ex = split.exercises[ei];
     if (!ex.warmup) {
-      const setNums = ex.sets || 3;
-      for (let si = 0; si < setNums; si++) {
-        const kg = document.getElementById(`kg-${ei}-${si}`)?.value || '';
+      for (let si = 0; si < (ex.sets || 3); si++) {
+        const kg  = document.getElementById(`kg-${ei}-${si}`)?.value || '';
         const rep = document.getElementById(`rep-${ei}-${si}`)?.value || '';
-        await saveVal(historyKey(currentSplit, ei, si, 'kg'), kg);
-        await saveVal(historyKey(currentSplit, ei, si, 'rep'), rep);
+        saveVal(historyKey(currentSplit, ei, si, 'kg'), kg);
+        saveVal(historyKey(currentSplit, ei, si, 'rep'), rep);
       }
     }
   }
-  showToast('Allenamento salvato! Dati aggiornati come riferimento');
+  showToast('Allenamento salvato ✓');
+  autoSyncIfConfigured();
+}
+
+// ── SYNC / GIST ───────────────────────────────────────────────────
+function getConfig() {
+  return {
+    token:  localStorage.getItem('gist_token')  || '',
+    gistId: localStorage.getItem('gist_id')     || '',
+  };
+}
+
+function initSyncView() {
+  const { token, gistId } = getConfig();
+  document.getElementById('tokenInput').value  = token  ? '•'.repeat(20) : '';
+  document.getElementById('gistIdInput').value = gistId || '';
+  updateSyncStatus();
+}
+
+function toggleToken() {
+  const inp = document.getElementById('tokenInput');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  // if obfuscated, clear so user can paste real token
+  if (inp.value === '•'.repeat(20)) inp.value = '';
+}
+
+function saveConfig() {
+  const tokenRaw = document.getElementById('tokenInput').value.trim();
+  const gistId   = document.getElementById('gistIdInput').value.trim();
+  if (tokenRaw && tokenRaw !== '•'.repeat(20)) {
+    localStorage.setItem('gist_token', tokenRaw);
+  }
+  if (gistId) localStorage.setItem('gist_id', gistId);
+  updateSyncStatus();
+  showToast('Configurazione salvata');
+}
+
+function updateSyncStatus() {
+  const { token, gistId } = getConfig();
+  const dot  = document.getElementById('statusDot');
+  const text = document.getElementById('statusText');
+  const btn  = document.getElementById('syncBtn');
+  const last = localStorage.getItem('gist_last_sync');
+
+  if (token) {
+    dot.className  = 'status-dot ok';
+    text.textContent = gistId ? 'Configurato — Gist ID: ' + gistId.slice(0, 8) + '…' : 'Token salvato — nessun Gist ancora';
+    btn.disabled = false;
+  } else {
+    dot.className  = 'status-dot';
+    text.textContent = 'Non configurato';
+    btn.disabled = true;
+  }
+  document.getElementById('lastSyncLabel').textContent = last ? 'Ultimo sync: ' + last : '';
+}
+
+function collectLocalData() {
+  const data = {};
+  for (let k in localStorage) {
+    if (k.startsWith('wt_')) data[k] = localStorage.getItem(k);
+  }
+  return data;
+}
+
+function applyData(data) {
+  for (const [k, v] of Object.entries(data)) {
+    if (k.startsWith('wt_')) localStorage.setItem(k, v);
+  }
+}
+
+async function syncNow() {
+  const { token, gistId } = getConfig();
+  if (!token) { showToast('Inserisci il token prima'); return; }
+  setStatusSyncing();
+  try {
+    if (!gistId) {
+      await pushToGist();
+    } else {
+      await pullFromGist();
+    }
+  } catch(e) {
+    setStatusError(e.message);
+  }
+}
+
+async function pushToGist() {
+  const { token, gistId } = getConfig();
+  if (!token) { showToast('Token mancante'); return; }
+  setStatusSyncing();
+  const payload = JSON.stringify(collectLocalData(), null, 2);
+  const body = {
+    description: 'Workout Tracker Data',
+    public: false,
+    files: { 'workout_data.json': { content: payload } }
+  };
+  const url    = gistId ? `https://api.github.com/gists/${gistId}` : 'https://api.github.com/gists';
+  const method = gistId ? 'PATCH' : 'POST';
+  const res    = await fetch(url, {
+    method,
+    headers: { Authorization: 'token ' + token, 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) throw new Error('GitHub API error: ' + res.status);
+  const json = await res.json();
+  if (!gistId) {
+    localStorage.setItem('gist_id', json.id);
+    document.getElementById('gistIdInput').value = json.id;
+  }
+  const now = new Date().toLocaleString('it-IT');
+  localStorage.setItem('gist_last_sync', now);
+  updateSyncStatus();
+  showToast('Caricato su Gist ✓');
+}
+
+async function pullFromGist() {
+  const { token, gistId } = getConfig();
+  if (!token || !gistId) { showToast('Configura token e Gist ID'); return; }
+  setStatusSyncing();
+  const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+    headers: { Authorization: 'token ' + token }
+  });
+  if (!res.ok) throw new Error('GitHub API error: ' + res.status);
+  const json = await res.json();
+  const raw  = json.files?.['workout_data.json']?.content;
+  if (!raw) throw new Error('File workout_data.json non trovato nel Gist');
+  applyData(JSON.parse(raw));
+  const now = new Date().toLocaleString('it-IT');
+  localStorage.setItem('gist_last_sync', now);
+  updateSyncStatus();
+  renderExercises();
+  showToast('Dati scaricati dal Gist ✓');
+}
+
+function setStatusSyncing() {
+  document.getElementById('statusDot').className  = 'status-dot syncing';
+  document.getElementById('statusText').textContent = 'Sincronizzazione in corso…';
+}
+
+function setStatusError(msg) {
+  document.getElementById('statusDot').className  = 'status-dot err';
+  document.getElementById('statusText').textContent = 'Errore: ' + msg;
+  showToast('Errore sync: ' + msg);
+}
+
+async function autoSyncIfConfigured() {
+  const { token, gistId } = getConfig();
+  if (token && gistId) {
+    try { await pushToGist(); } catch(e) { console.warn('Auto-sync failed', e); }
+  }
 }
 
 function showToast(msg) {
@@ -415,5 +639,9 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 
+// ── INIT ──────────────────────────────────────────────────────────
 loadSplit(0);
+document.getElementById('finishBar').style.display = 'block';
 </script>
+</body>
+</html>
